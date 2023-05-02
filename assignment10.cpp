@@ -1,59 +1,83 @@
 #include <iostream>
-#include <vector>
-#include <algorithm>
-#include <cmath>
-#include <unordered_map>
 using namespace std;
 
-int knapSack(vector<int> &weights,vector<int> &profits,int n,int capacity)
-{
-    int i,w;//two pointers nof the dp array;
-    vector<vector<int> > dp(n+1,vector<int>(capacity+1));
-    vector<int> taken(n);
+const int N = 9;
+const int SQN = 3;
+int grid[N][N];
 
-    for(i=0;i<n+1;i++)
-    {
-        for(w=0;w<capacity+1;w++)
-        {
-            if(i==0 || w==0)
-            {
-                dp[i][w] = 0;
-            }
-            else if(weights[i-1]<=w)
-            {
-                dp[i][w] = max(dp[i-1][w],(profits[i-1]+dp[i-1][w-weights[i-1]]));
-            }
-            else
-            {
-                dp[i][w] = dp[i-1][w];
+// Function to check if a given number can be placed in the given row and column
+bool canPlace(int row, int col, int num) {
+    for (int i = 0; i < N; i++) {
+        if (grid[row][i] == num || grid[i][col] == num) {
+            return false;
+        }
+    }
+    int subrow = (row / SQN) * SQN;
+    int subcol = (col / SQN) * SQN;
+    for (int i = subrow; i < subrow + SQN; i++) {
+        for (int j = subcol; j < subcol + SQN; j++) {
+            if (grid[i][j] == num) {
+                return false;
             }
         }
     }
-    int maxi = dp[n][capacity];
-    
-
-    return dp[n][capacity];
+    return true;
 }
 
-int main()
-{
-    int n;
-    cin >> n;
-
-    vector<int> weights(n);
-    for (int i = 0; i < n; i++)
-    {
-        cin >> weights[i];
+// Function to solve the Sudoku grid
+bool solve() {
+    int row = -1, col = -1;
+    bool isEmpty = false;
+    for (int i = 0; i < N; i++) {
+        for (int j = 0; j < N; j++) {
+            if (grid[i][j] == 0) {
+                row = i;
+                col = j;
+                isEmpty = true;
+                break;
+            }
+        }
+        if (isEmpty) {
+            break;
+        }
     }
-    vector<int> profits(n);
-    for (int i = 0; i < n; i++)
-    {
-        cin >> profits[i];
+    if (!isEmpty) {
+        return true;
     }
+    for (int num = 1; num <= N; num++) {
+        if (canPlace(row, col, num)) {
+            grid[row][col] = num;
+            if (solve()) {
+                return true;
+            }
+            grid[row][col] = 0;
+        }
+    }
+    return false;
+}
 
-    int capacity;
-    cin >> capacity;
+// Function to print the solved Sudoku grid
+void printGrid() {
+    for (int i = 0; i < N; i++) {
+        for (int j = 0; j < N; j++) {
+            cout << grid[i][j] << " ";
+        }
+        cout << endl;
+    }
+}
 
-    cout << knapSack(weights,profits,n,capacity);
-
+int main() {
+    // Enter the Sudoku grid
+    for (int i = 0; i < N; i++) {
+        for (int j = 0; j < N; j++) {
+            cin >> grid[i][j];
+        }
+    }
+    if (solve()) {
+        cout << "Solved Sudoku grid:" << endl;
+        printGrid();
+    } else {
+        cout << "No solution exists." << endl;
+    }
+    return 0;
 }
