@@ -8,7 +8,7 @@ using namespace std;
 bool solveRec(string &s,string &p,int i,int j)
 {
     //base case
-    if(i<0 && j<0)//thsi menas that bothe the string anf pattern consumed completely menas pattern is matched.
+    if(i<0 && j<0)//thsi means that both the string anf pattern consumed completely menas pattern is matched.
     {
         return true; 
     }
